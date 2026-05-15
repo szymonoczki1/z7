@@ -192,3 +192,29 @@ describe('GET /stats', () => {
         assert.equal(res.body.cache_hits, 1);
     });
 });
+
+describe('POST /subtract', () => {
+    test('subtracts two numbers correctly', async () => {
+        const res = await request('POST', '/subtract', { a: 10, b: 3 });
+        assert.equal(res.status, 200);
+        assert.equal(res.body.result, 7);
+    });
+
+    test('works with negative numbers', async () => {
+        const res = await request('POST', '/subtract', { a: -5, b: -3 });
+        assert.equal(res.status, 200);
+        assert.equal(res.body.result, -2);
+    });
+
+    test('returns 400 when a is not a number', async () => {
+        const res = await request('POST', '/subtract', { a: 'abc', b: 5 });
+        assert.equal(res.status, 400);
+        assert.ok(res.body.error);
+    });
+
+    test('returns 400 when b is not a number', async () => {
+        const res = await request('POST', '/subtract', { a: 10, b: 'xyz' });
+        assert.equal(res.status, 400);
+        assert.ok(res.body.error);
+    });
+});

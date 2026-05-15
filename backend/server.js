@@ -95,6 +95,15 @@ app.get('/health', (_req, res) => {
     res.json({ status: 'ok' });
 });
 
+// POST /subtract - odejmuje dwie liczby
+app.post('/subtract', (req, res) => {
+    const { a, b } = req.body;
+    if (typeof a !== 'number' || typeof b !== 'number') {
+        return res.status(400).json({ error: 'a and b must be numbers' });
+    }
+    res.json({ result: a - b });
+});
+
 const PORT = process.env.PORT || 3000;
 
 // najpierw polacz z Redis, potem zainicjalizuj baze, potem uruchom serwer
