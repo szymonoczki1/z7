@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stats - Product Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="products.html">Products</a>
+        <a href="stats.html">Stats</a>
+    </nav>
+    <div class="container">
+        <h1>Statistics</h1>
+        <div id="stats">
+            <p>Loading stats...</p>
+        </div>
+    </div>
+    <script>
+        async function loadStats() {
+            try {
+                const res = await fetch('/api/stats');
+                const data = await res.json();
+                document.getElementById('stats').innerHTML =
+                    '<p><strong>Total products:</strong> ' + data.totalProducts + '</p>' +
+                    '<p><strong>Backend instance ID:</strong> ' + data.instanceId + '</p>';
+            } catch (err) {
+                document.getElementById('stats').innerHTML = '<p>Error loading stats.</p>';
+            }
+        }
+        loadStats();
+    </script>
+</body>
+</html>

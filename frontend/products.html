@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products - Product Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="products.html">Products</a>
+        <a href="stats.html">Stats</a>
+    </nav>
+    <div class="container">
+        <h1>Products</h1>
+
+        <h2>Add New Product</h2>
+        <form id="product-form">
+            <input type="text" id="name" placeholder="Product name" required>
+            <input type="number" id="price" placeholder="Price" step="0.01" required>
+            <button type="submit">Add Product</button>
+        </form>
+        <p id="form-message"></p>
+
+        <h2>Product List</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Price</th>
+                </tr>
+            </thead>
+            <tbody id="product-list"></tbody>
+        </table>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>

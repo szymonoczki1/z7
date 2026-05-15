@@ -1,0 +1,9 @@
+services:
+  backend:
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    environment:
+      NODE_ENV: development
+      DEBUG: "1"
+    command: ["node", "--watch", "server.js"]

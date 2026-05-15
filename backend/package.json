@@ -1,0 +1,17 @@
+{
+  "name": "product-dashboard-backend",
+  "version": "1.0.0",
+  "description": "Product Dashboard backend — Node.js + Express + PostgreSQL + Redis",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "lint": "node --check server.js tests/server.test.js",
+    "test": "node --test tests/server.test.js",
+    "build": "node --check server.js && echo 'Build OK'"
+  },
+  "dependencies": {
+    "express": "^5.2.1",
+    "pg": "^8.13.1",
+    "redis": "^4.7.0"
+  }
+}

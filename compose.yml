@@ -1,0 +1,81 @@
+services:
+
+  nginx:
+    build:
+      context: ./frontend
+    ports:
+      - "${APP_PORT:-80}:80"
+    networks:
+      - front-net
+      - back-net
+    depends_on:
+      - backend
+
+  backend:
+    build:
+      context: ./backend
+    networks:
+      - back-net
+    environment:
+      POSTGRES_HOST: db
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      REDIS_HOST: cache
+    depends_on:
+      db:
+        condition: service_healthy
+      cache:
+        condition: service_healthy
+
+  db:
+    image: postgres:16-alpine
+    networks:
+      - back-net
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  cache:
+    image: redis:7-alpine
+    networks:
+      - back-net
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+
+  db-seed:
+    image: postgres:16-alpine
+    profiles:
+      - tools
+    networks:
+      - back-net
+    environment:
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+    command: >
+      psql -h db -U ${POSTGRES_USER} -d ${POSTGRES_DB}
+      -c "INSERT INTO products (name, price) VALUES ('Widget', 9.99), ('Gadget', 24.99), ('Doohickey', 4.49)"
+    depends_on:
+      db:
+        condition: service_healthy
+
+networks:
+  front-net:
+    driver: bridge
+  back-net:
+    driver: bridge
+
+volumes:
+  pg-data:
