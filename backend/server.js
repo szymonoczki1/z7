@@ -2,7 +2,7 @@ const express = require('express');
 const os = require('os');
 const { Pool } = require('pg');
 const { createClient } = require('redis');
-FAIL:)
+
 const app = express();
 app.use(express.json());
 
