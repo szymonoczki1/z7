@@ -17,7 +17,7 @@ env:
 
 jobs:
 
-  # ── Job 1: Lint ──────────────────────────────────────────────────────────
+  # job 1: lint (syntax check)
   lint:
     name: Lint
     runs-on: ubuntu-latest
@@ -42,7 +42,7 @@ jobs:
       - name: Run linter
         run: npm run lint
 
-  # ── Job 2: Test (matrix) ─────────────────────────────────────────────────
+  # job 2: test (matrix, run on multiple node versions)
   test:
     name: Tests (Node ${{ matrix.node-version }})
     needs: lint
@@ -98,7 +98,7 @@ jobs:
           echo "| Runner OS        | ${{ runner.os }}             |" >> $GITHUB_STEP_SUMMARY
           echo "| Job status       | ${{ job.status }}            |" >> $GITHUB_STEP_SUMMARY
 
-  # ── Job 3: Build ─────────────────────────────────────────────────────────
+  # job 3: build
   build:
     name: Build
     needs: test
