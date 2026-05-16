@@ -6,7 +6,7 @@ const { createClient } = require('redis');
 const app = express();
 app.use(express.json());
 
-// polaczenie z PostgreSQL przez zmienne srodowiskowe
+// polaczenie z pgsql przez zmienne srodowiskowe, orbimy connection pool
 const pool = new Pool({
     host: process.env.POSTGRES_HOST || 'db',
     database: process.env.POSTGRES_DB,
@@ -14,7 +14,7 @@ const pool = new Pool({
     password: process.env.POSTGRES_PASSWORD,
 });
 
-// polaczenie z Redis - redis v4 wymaga jawnego connect()
+// polaczenie z redisem
 const redis = createClient({
     socket: { host: process.env.REDIS_HOST || 'cache', port: 6379 }
 });
@@ -36,16 +36,16 @@ async function initDb() {
     `);
 }
 
-// GET /items - najpierw sprawdza cache Redis, przy braku pobiera z bazy i zapisuje cache na 30s
+// GET /items - najpierw sprawdza cache redis, przy braku pobiera z bazy i zapisuje cache na 30s
 app.get('/items', async (_req, res) => {
     try {
         const cached = await redis.get(ITEMS_KEY);
         if (cached) {
-            // trafienie cache - inkrementuj licznik i zwroc z Redis
+            // trafienie cache - inkrementuj licznik i zwroc z redis
             cacheHits++;
             return res.json(JSON.parse(cached));
         }
-        // chybienie cache - pobierz z bazy i zapisz w cache
+        // miss cache - pobierz z bazy i zapisz w cache
         const { rows } = await pool.query('SELECT * FROM products ORDER BY id');
         await redis.set(ITEMS_KEY, JSON.stringify(rows), { EX: CACHE_TTL });
         res.json(rows);
@@ -93,6 +93,15 @@ app.get('/stats', async (_req, res) => {
 // health check
 app.get('/health', (_req, res) => {
     res.json({ status: 'ok' });
+});
+
+// POST /subtract - odejmuje dwie liczby
+app.post('/subtract', (req, res) => {
+    const { a, b } = req.body;
+    if (typeof a !== 'number' || typeof b !== 'number') {
+        return res.status(400).json({ error: 'a and b must be numbers' });
+    }
+    res.json({ result: a - b });
 });
 
 const PORT = process.env.PORT || 3000;
